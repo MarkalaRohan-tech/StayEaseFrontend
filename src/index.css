@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+html{
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.roboto {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+}
+
+.arizonia-regular {
+  font-family: "Arizonia", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
