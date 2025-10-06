@@ -56,7 +56,11 @@ const Account = () => {
         data: Array(12).fill(0),
         backgroundColor: "#2563eb",
       },
-      { label: "Hosting", data: Array(12).fill(0), backgroundColor: "#f97316" },
+      {
+        label: "Hosting",
+        data: Array(12).fill(0),
+        backgroundColor: "#f97316",
+      },
     ],
   });
 
@@ -64,9 +68,7 @@ const Account = () => {
     const id = JSON.parse(localStorage.getItem("user"))._id;
     const fetchActivity = async () => {
       try {
-        console.log("Fetching activity for user ID:", id);
         const res = await axios.get(`/api/user/${id}/activity`);
-        console.log("Bar Graph Data:", res.data);
         setBookingData((prev) => ({
           ...prev,
           datasets: [
@@ -78,7 +80,6 @@ const Account = () => {
         console.error(err);
       }
     };
-
     fetchActivity();
   }, []);
 
@@ -103,7 +104,7 @@ const Account = () => {
     if (!isAuth) {
       navigate("/login");
     }
-  }, [isAuth]);
+  }, [isAuth, navigate]);
 
   const [userData, setUserData] = useState({
     profilePic: "",
@@ -130,19 +131,12 @@ const Account = () => {
           const response = await axios.get(`/api/user/${_id}`, {
             withCredentials: true,
           });
-
-          setUserData((prev) => ({
-            ...prev,
-            ...response.data,
-          }));
+          setUserData((prev) => ({ ...prev, ...response.data }));
         } catch (err) {
           console.error("Error fetching user:", err);
         }
-      } else {
-        console.log("No user or token in localStorage");
       }
     };
-
     fetchUser();
   }, []);
 
@@ -170,17 +164,13 @@ const Account = () => {
         try {
           const { _id } = JSON.parse(storedUser);
           const response = await axios.get(`/api/user/${_id}/reviews`);
-
           setReviews(response.data.totalReviews || 0);
           setAvgRating(response.data.avgRating || 0);
         } catch (err) {
           console.error("Error fetching reviews:", err);
         }
-      } else {
-        console.log("No user logged in");
       }
     };
-
     fetchReviews();
   }, []);
 
@@ -191,8 +181,7 @@ const Account = () => {
     const file = e.target.files[0];
     if (file) {
       setProfileFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -207,22 +196,17 @@ const Account = () => {
           `/api/upload/get-profile-presigned-url?fileName=${profileFile.name}&fileType=${profileFile.type}`
         );
 
-        const { uploadUrl, fileUrl } = data;
-
-        await axios.put(uploadUrl, profileFile, {
+        await axios.put(data.uploadUrl, profileFile, {
           headers: { "Content-Type": profileFile.type },
         });
 
-        profilePicUrl = fileUrl;
+        profilePicUrl = data.fileUrl;
       }
 
       const storedUser = localStorage.getItem("user");
       const { _id } = JSON.parse(storedUser);
       const updatedUserData = { ...userData, profilePic: profilePicUrl, _id };
-      const response = await axios.put(
-        `/api/user/update-profile/`,
-        updatedUserData
-      );
+      await axios.put(`/api/user/update-profile/`, updatedUserData);
       setUserData(updatedUserData);
       setProfileFile(null);
       setPreviewUrl(null);
@@ -234,14 +218,14 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full bg-gray-50">
       {/* Edit Profile Modal */}
-      <dialog id="my_modal_3" className="modal backdrop-blur-sm">
-        <div className="modal-box max-w-2xl bg-white/95 backdrop-blur-md border border-yellow-200 shadow-2xl">
-          <form encType="multipart/form-data" className="space-y-6">
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box w-[95%] max-w-2xl bg-white border border-yellow-200 shadow-2xl">
+          <form className="space-y-4 sm:space-y-6">
             <button
               type="button"
-              className="btn btn-sm btn-circle btn-ghost absolute right-3 top-3 hover:bg-yellow-100"
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 hover:bg-yellow-100"
               onClick={() => {
                 document.getElementById("my_modal_3").close();
                 setPreviewUrl(null);
@@ -251,19 +235,19 @@ const Account = () => {
               ✕
             </button>
 
-            <div className="text-center mb-8">
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-500 bg-clip-text text-transparent">
+            <div className="text-center mb-4 sm:mb-6 pt-8 sm:pt-4">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-500 bg-clip-text text-transparent">
                 Edit Profile
               </h3>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 text-xs sm:text-sm md:text-base px-4">
                 Update your personal information
               </p>
             </div>
 
-            {/* Profile Picture Section */}
-            <div className="flex flex-col items-center space-y-4">
+            {/* Profile Picture */}
+            <div className="flex flex-col items-center space-y-3">
               <div className="relative group">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-yellow-300 shadow-lg">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-yellow-300 shadow-lg">
                   <img
                     src={
                       previewUrl ||
@@ -274,8 +258,8 @@ const Account = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity duration-200">
-                  <Camera className="text-white w-8 h-8" />
+                <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                  <Camera className="text-white w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
                   <input
                     type="file"
                     accept="image/*"
@@ -284,16 +268,16 @@ const Account = () => {
                   />
                 </label>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs sm:text-sm text-gray-500 text-center px-4">
                 Click to change profile picture
               </p>
             </div>
 
             {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <User size={16} /> Full Name
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6 px-2">
+              <div className="space-y-1 sm:space-y-2">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <User size={14} className="sm:w-4 sm:h-4" /> Full Name
                 </label>
                 <input
                   type="text"
@@ -302,30 +286,30 @@ const Account = () => {
                   onChange={(e) =>
                     setUserData({ ...userData, fullName: e.target.value })
                   }
-                  className="input input-bordered w-full border-yellow-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200"
+                  className="input input-bordered w-full text-sm border-yellow-200 focus:border-yellow-400"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Phone size={16} /> Phone
+              <div className="space-y-1 sm:space-y-2">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Phone size={14} className="sm:w-4 sm:h-4" /> Phone
                 </label>
                 <input
                   type="tel"
-                  placeholder="Enter your phone number"
+                  placeholder="Enter phone number"
                   value={userData.phone}
                   onChange={(e) =>
                     setUserData({ ...userData, phone: e.target.value })
                   }
-                  className="input input-bordered w-full border-yellow-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200"
+                  className="input input-bordered w-full text-sm border-yellow-200 focus:border-yellow-400"
                   required
                 />
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Mail size={16} /> Email
+              <div className="space-y-1 sm:space-y-2 sm:col-span-2">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Mail size={14} className="sm:w-4 sm:h-4" /> Email
                 </label>
                 <input
                   type="email"
@@ -334,14 +318,14 @@ const Account = () => {
                   onChange={(e) =>
                     setUserData({ ...userData, email: e.target.value })
                   }
-                  className="input input-bordered w-full border-yellow-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200"
+                  className="input input-bordered w-full text-sm border-yellow-200 focus:border-yellow-400"
                   required
                 />
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <MapPinCheck size={16} /> Address
+              <div className="space-y-1 sm:space-y-2 sm:col-span-2">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <MapPinCheck size={14} className="sm:w-4 sm:h-4" /> Address
                 </label>
                 <input
                   type="text"
@@ -350,14 +334,14 @@ const Account = () => {
                   onChange={(e) =>
                     setUserData({ ...userData, address: e.target.value })
                   }
-                  className="input input-bordered w-full border-yellow-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200"
+                  className="input input-bordered w-full text-sm border-yellow-200 focus:border-yellow-400"
                   required
                 />
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <label className=" font-semibold text-gray-700 flex items-center gap-2">
-                  <UserCircle size={16} /> About Me
+              <div className="space-y-1 sm:space-y-2 sm:col-span-2">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <UserCircle size={14} className="sm:w-4 sm:h-4" /> About Me
                 </label>
                 <textarea
                   placeholder="Tell us about yourself"
@@ -365,13 +349,13 @@ const Account = () => {
                   onChange={(e) =>
                     setUserData({ ...userData, aboutMe: e.target.value })
                   }
-                  className="textarea textarea-bordered w-full h-24 border-yellow-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 resize-none"
+                  className="textarea textarea-bordered w-full h-20 sm:h-24 text-sm border-yellow-200 focus:border-yellow-400 resize-none"
                 ></textarea>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-center gap-4 pt-4">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 pt-4 px-2">
               <button
                 type="button"
                 onClick={() => {
@@ -379,14 +363,14 @@ const Account = () => {
                   setPreviewUrl(null);
                   setProfileFile(null);
                 }}
-                className="btn btn-outline btn-warning hover:bg-yellow-50"
+                className="btn btn-outline btn-warning w-full sm:w-auto text-xs sm:text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleEditProfile}
                 type="submit"
-                className="btn bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-none hover:from-yellow-500 hover:to-orange-500 shadow-lg"
+                className="btn bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-none hover:from-yellow-500 hover:to-orange-500 w-full sm:w-auto text-xs sm:text-sm"
               >
                 Save Changes
               </button>
@@ -396,98 +380,124 @@ const Account = () => {
       </dialog>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 pt-24 pb-8">
+      <div className="w-full px-3 sm:px-4 lg:px-6 pt-10 sm:pt-10 pb-6 sm:pb-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-600 via-orange-500 to-yellow-600 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-6 sm:mb-8 max-w-4xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-yellow-600 via-orange-500 to-yellow-600 bg-clip-text text-transparent mb-2 sm:mb-3 px-4">
             My Account
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-lg px-4">
             Manage your profile, track your journey, and grow your hosting
             business
           </p>
         </div>
 
         {/* Profile Card */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <div className="bg-gradient-to-r from-yellow-400 via-yellow-100 to-white rounded-3xl shadow-2xl overflow-hidden border border-yellow-200">
-            <div className="p-8">
-              <div className="flex flex-col lg:flex-row items-center gap-8">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
+          <div className="bg-gradient-to-r from-yellow-400 via-yellow-100 to-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl overflow-hidden border border-yellow-200">
+            <div className="p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-6">
                 {/* Profile Image */}
                 <div className="flex-shrink-0">
                   <div className="relative">
-                    <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-full overflow-hidden border-4 border-white shadow-xl">
                       <img
                         src={userData.profilePic || "/Images/Logo/profile.png"}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="absolute -bottom-2 -right-2">
-                      <div className="bg-yellow-400 rounded-full p-2 shadow-lg">
-                        <User className="w-6 h-6 text-white" />
+                    <div className="absolute -bottom-1 -right-1">
+                      <div className="bg-yellow-400 rounded-full p-1.5 sm:p-2 shadow-lg">
+                        <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Profile Info */}
-                <div className="flex-1 text-center lg:text-left">
+                <div className="flex-1 text-center lg:text-left w-full">
                   {/* Badges */}
-                  <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-6">
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-3 sm:mb-4">
                     {userData.bookings.length >= 10 && (
-                      <span className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white text-sm px-4 py-2 rounded-full shadow-lg font-semibold">
-                        <Luggage size={16} /> Traveler
+                      <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-2.5 py-1.5 rounded-full shadow-lg font-semibold">
+                        <Luggage size={12} className="sm:w-3.5 sm:h-3.5" />
+                        Traveler
                       </span>
                     )}
                     {userData.hosting.length >= 10 && (
-                      <span className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm px-4 py-2 rounded-full shadow-lg font-semibold">
-                        <Home size={16} /> Superhost
+                      <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-2.5 py-1.5 rounded-full shadow-lg font-semibold">
+                        <Home size={12} className="sm:w-3.5 sm:h-3.5" />
+                        Superhost
                       </span>
                     )}
                     {reviews >= 10 && (
-                      <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm px-4 py-2 rounded-full shadow-lg font-semibold">
-                        <Star size={16} /> Top Rated
+                      <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-2.5 py-1.5 rounded-full shadow-lg font-semibold">
+                        <Star size={12} className="sm:w-3.5 sm:h-3.5" />
+                        Top Rated
                       </span>
                     )}
                   </div>
 
-                  <h2 className="text-3xl font-bold text-gray-800 mb-4 flex items-center justify-center lg:justify-start gap-2">
-                    <User size={24} />
-                    {userData.fullName}
+                  <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center justify-center lg:justify-start gap-2 px-2">
+                    <User
+                      size={18}
+                      className="sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0"
+                    />
+                    <span className="break-words">{userData.fullName}</span>
                   </h2>
 
-                  <div className="space-y-3 text-gray-700">
-                    <p className="flex items-center justify-center lg:justify-start gap-2">
-                      <MapPinCheck size={18} className="text-green-600" />
-                      <span className="font-semibold">Location:</span>
-                      <span>{userData.address}</span>
+                  <div className="space-y-2 text-gray-700 text-xs sm:text-sm md:text-base">
+                    <p className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-1 px-2">
+                      <span className="flex items-center gap-1.5 font-semibold whitespace-nowrap">
+                        <MapPinCheck
+                          size={14}
+                          className="sm:w-4 sm:h-4 text-green-600 flex-shrink-0"
+                        />
+                        Location:
+                      </span>
+                      <span className="break-words text-center sm:text-left">
+                        {userData.address}
+                      </span>
                     </p>
-                    <p className="flex items-center justify-center lg:justify-start gap-2">
-                      <Mail size={18} className="text-blue-600" />
-                      <span className="font-semibold">Email:</span>
-                      <span>{userData.email}</span>
+                    <p className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-1 px-2">
+                      <span className="flex items-center gap-1.5 font-semibold whitespace-nowrap">
+                        <Mail
+                          size={14}
+                          className="sm:w-4 sm:h-4 text-blue-600 flex-shrink-0"
+                        />
+                        Email:
+                      </span>
+                      <span className="break-all text-center sm:text-left">
+                        {userData.email}
+                      </span>
                     </p>
-                    <p className="flex items-center justify-center lg:justify-start gap-2">
-                      <Phone size={18} className="text-purple-600" />
-                      <span className="font-semibold">Phone:</span>
-                      <span>{userData.phone}</span>
+                    <p className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-1 px-2">
+                      <span className="flex items-center gap-1.5 font-semibold whitespace-nowrap">
+                        <Phone
+                          size={14}
+                          className="sm:w-4 sm:h-4 text-purple-600 flex-shrink-0"
+                        />
+                        Phone:
+                      </span>
+                      <span className="break-words text-center sm:text-left">
+                        {userData.phone}
+                      </span>
                     </p>
                   </div>
 
                   {userData.aboutMe && (
-                    <div className="mt-4">
-                      <p className="flex items-start justify-center lg:justify-start gap-2 text-gray-700">
-                        <UserCircle
-                          size={18}
-                          className="text-orange-600 mt-0.5"
-                        />
-                        <span>
-                          <span className="font-semibold">About Me:</span>
-                          <br />
-                          <span className="text-gray-600">
-                            {userData.aboutMe}
-                          </span>
+                    <div className="mt-3 sm:mt-4">
+                      <p className="flex flex-col sm:flex-row items-start justify-center lg:justify-start gap-1 text-gray-700 text-xs sm:text-sm md:text-base px-2">
+                        <span className="flex items-center gap-1.5 font-semibold whitespace-nowrap">
+                          <UserCircle
+                            size={14}
+                            className="sm:w-4 sm:h-4 text-orange-600 flex-shrink-0"
+                          />
+                          About:
+                        </span>
+                        <span className="text-gray-600 text-center sm:text-left break-words">
+                          {userData.aboutMe}
                         </span>
                       </p>
                     </div>
@@ -496,21 +506,21 @@ const Account = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap justify-center gap-4 mt-8 pt-6 border-t border-yellow-200">
+              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-yellow-200">
                 <button
                   onClick={() =>
                     document.getElementById("my_modal_3").showModal()
                   }
-                  className="btn bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-none hover:from-yellow-500 hover:to-orange-500 shadow-lg flex items-center gap-2"
+                  className="btn bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-none hover:from-yellow-500 hover:to-orange-500 shadow-lg flex items-center justify-center gap-2 w-full sm:w-auto text-xs sm:text-sm"
                 >
-                  <Edit size={18} />
+                  <Edit size={14} className="sm:w-4 sm:h-4" />
                   Edit Profile
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="btn bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 shadow-lg flex items-center gap-2"
+                  className="btn bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 shadow-lg flex items-center justify-center gap-2 w-full sm:w-auto text-xs sm:text-sm"
                 >
-                  <LogOut size={18} />
+                  <LogOut size={14} className="sm:w-4 sm:h-4" />
                   Logout
                 </button>
               </div>
@@ -519,13 +529,15 @@ const Account = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 mb-6 sm:mb-8 max-w-6xl mx-auto">
           <StatsCard
             title="Total Bookings"
             value={userData.bookings.length}
-            subTitle="Stays booked this year"
+            subTitle="Stays booked"
             iconColor="text-green-500"
-            icon={<i className="fa-solid fa-house text-2xl"></i>}
+            icon={
+              <i className="fa-solid fa-house text-lg sm:text-xl md:text-2xl"></i>
+            }
             border="border-green-400"
             shadowColor="shadow-green-200"
             shadow="shadow-xl"
@@ -535,7 +547,9 @@ const Account = () => {
             value={userData.hosting.length}
             subTitle="Active Listings"
             iconColor="text-orange-500"
-            icon={<i className="fa-solid fa-hotel text-2xl"></i>}
+            icon={
+              <i className="fa-solid fa-hotel text-lg sm:text-xl md:text-2xl"></i>
+            }
             border="border-orange-400"
             shadowColor="shadow-orange-200"
             shadow="shadow-xl"
@@ -543,30 +557,31 @@ const Account = () => {
           <StatsCard
             title="Total Reviews"
             value={reviews}
-            subTitle={`Average Rating: ${
+            subTitle={`Avg: ${
               typeof avgRating === "number" ? avgRating.toFixed(1) : "0.0"
             }`}
             iconColor="text-blue-500"
-            icon={<i className="fa-solid fa-star text-2xl"></i>}
+            icon={
+              <i className="fa-solid fa-star text-lg sm:text-xl md:text-2xl"></i>
+            }
             border="border-blue-400"
             shadowColor="shadow-blue-200"
             shadow="shadow-xl"
           />
         </div>
 
-        {/* Chart and Other Components */}
-        <div className="space-y-8">
-          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+        {/* Chart and Components */}
+        <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border border-gray-100">
             <BarChart bookingData={bookingData} />
           </div>
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <Bookings />
-            </div>
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <Hostings />
-            </div>
-
-          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border border-gray-100">
+            <Bookings />
+          </div>
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border border-gray-100">
+            <Hostings />
+          </div>
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border border-gray-100">
             <Achievements />
           </div>
         </div>

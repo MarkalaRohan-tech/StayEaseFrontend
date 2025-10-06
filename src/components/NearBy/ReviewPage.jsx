@@ -20,34 +20,21 @@ const ReviewPage = ({ id, host }) => {
     const fetchComments = async () => {
       try {
         const response = await axios.get(`/api/review/getComments/${id}`);
-        console.log("Fetched comments:", response.data);
         setComments(response.data.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     };
-
     fetchComments();
-  }, []);
+  }, [id]);
 
   const handleCommentPost = async (e) => {
     e.preventDefault();
     if (!commentData.comment) return;
 
     try {
-      const postData = {
-        name: user?.fullName,
-        property: id,
-        user: user?._id,
-        rating: commentData.rating,
-        interactionType: commentData.interactionType,
-        comment: commentData.comment,
-        host: host,
-      };
-      console.log(postData)
       const res = await axios.get(`/api/review/getComments/${id}`);
       const existing = res.data.data;
-
       const alreadyCommented = existing.some((c) => c.user === user?._id);
 
       if (alreadyCommented) {
@@ -55,17 +42,13 @@ const ReviewPage = ({ id, host }) => {
         return;
       }
 
-      const response = await axios.post("/api/review/add", postData);
-
+      const response = await axios.post("/api/review/add", commentData);
       if (response.status === 201) {
         handleSuccess(response.data.message);
         setCommentData((prev) => ({ ...prev, comment: "" }));
-
         const updated = await axios.get(`/api/review/getComments/${id}`);
         setComments(updated.data.data);
-      } else {
-        handleError("Error posting comment");
-      }
+      } else handleError("Error posting comment");
     } catch (error) {
       handleError(error);
       console.error("Error:", error);
@@ -73,97 +56,88 @@ const ReviewPage = ({ id, host }) => {
   };
 
   return (
-    <div className="w-full h-full pb-5 rounded-xl">
-      <div className="p-3 rounded-xl w-[100%] border-2 mb-5 z-10 top-0 sticky bg-white border-yellow-400 shadow-lg">
-        <h1 className="text-yellow-400 w-full text-center text-shadow-lg font-bold roboto text-2xl">
-          Reviews & Comments
-        </h1>
+    <div className="bg-white rounded-2xl shadow-xl max-w-4xl mx-auto my-8 overflow-hidden transition-all duration-300 ease-in-out">
+      {/* Header */}
+      <div className="bg-yellow-50 border-b-2 border-yellow-400 p-4 text-center sticky top-0 z-10">
+        <h2 className="text-yellow-500 font-extrabold text-xl sm:text-2xl tracking-wide">
+          Guest Reviews & Comments
+        </h2>
       </div>
-      <center>
-        <div className="p-3 rounded-xl w-[80%] border-2 mb-5 border-yellow-400 shadow-lg">
-          <h1 className="font-bold text-lg mb-4 border-b-2 p-3 border-yellow-400">
-            Drop Your comments
-          </h1>
 
-          <form onSubmit={handleCommentPost}>
+      <div className="p-5 sm:p-8 space-y-8">
+        {/* Comment Form */}
+        <div className="border border-yellow-300 rounded-xl p-5 sm:p-6 bg-gradient-to-br from-yellow-50 to-white shadow-md">
+          <h3 className="font-bold text-lg sm:text-xl mb-4 border-b-2 border-yellow-300 pb-2 flex items-center gap-2">
+            Leave a Review
+          </h3>
+
+          <form onSubmit={handleCommentPost} className="space-y-5">
             {/* Interaction Type */}
-            <h1 className="font-bold">Interaction Type:</h1>
-            <div className="flex justify-around mt-3 mb-3 items-center">
-              <label className="inline-block">
-                <input
-                  type="radio"
-                  name="interaction"
-                  id="visited"
-                  value="visited"
-                  onChange={(e) =>
-                    setCommentData((prev) => ({
-                      ...prev,
-                      interactionType: e.target.value,
-                    }))
-                  }
-                  className="radio radio-warning mr-3"
-                  defaultChecked
-                />
-                Visited
-              </label>
-              <label className="inline-block">
-                <input
-                  type="radio"
-                  name="interaction"
-                  id="short"
-                  value="short"
-                  onChange={(e) =>
-                    setCommentData((prev) => ({
-                      ...prev,
-                      interactionType: e.target.value,
-                    }))
-                  }
-                  className="radio radio-warning mr-3"
-                />
-                Short Stay
-              </label>
-              <label className="inline-block">
-                <input
-                  type="radio"
-                  name="interaction"
-                  id="long"
-                  value="long"
-                  onChange={(e) =>
-                    setCommentData((prev) => ({
-                      ...prev,
-                      interactionType: e.target.value,
-                    }))
-                  }
-                  className="radio radio-warning mr-3"
-                />
-                Long Stay
-              </label>
+            <div>
+              <h4 className="font-semibold mb-2 text-sm sm:text-base">
+                Interaction Type
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {["visited", "short", "long"].map((type) => (
+                  <label
+                    key={type}
+                    className={`cursor-pointer flex items-center gap-2 rounded-full px-4 py-2 border ${
+                      commentData.interactionType === type
+                        ? "bg-yellow-400 text-white border-yellow-400"
+                        : "border-yellow-300 text-gray-600"
+                    } transition-all duration-200`}
+                  >
+                    <input
+                      type="radio"
+                      name="interaction"
+                      value={type}
+                      checked={commentData.interactionType === type}
+                      onChange={(e) =>
+                        setCommentData((prev) => ({
+                          ...prev,
+                          interactionType: e.target.value,
+                        }))
+                      }
+                      className="hidden"
+                    />
+                    {type === "visited" && "Visited"}
+                    {type === "short" && "Short Stay"}
+                    {type === "long" && "Long Stay"}
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Rating */}
-            <h1 className="font-bold">Rating</h1>
-            <div className="rating mt-3 mb-3">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <input
-                  key={star}
-                  type="radio"
-                  name="rating"
-                  checked={commentData.rating === star}
-                  value={star}
-                  onChange={(e) =>
-                    setCommentData((prev) => ({
-                      ...prev,
-                      rating: Number(e.target.value),
-                    }))
-                  }
-                  className="mask mask-star bg-yellow-400"
-                />
-              ))}
+            <div>
+              <h4 className="font-semibold mb-2 text-sm sm:text-base">
+                Rating
+              </h4>
+              <div className="rating rating-lg flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <input
+                    key={star}
+                    type="radio"
+                    name="rating"
+                    checked={commentData.rating === star}
+                    value={star}
+                    onChange={(e) =>
+                      setCommentData((prev) => ({
+                        ...prev,
+                        rating: Number(e.target.value),
+                      }))
+                    }
+                    className="mask mask-star bg-yellow-400 transition-transform hover:scale-110"
+                  />
+                ))}
+              </div>
             </div>
 
-            {/* Comment */}
+            {/* Comment Box */}
             <div>
-              <h1 className="font-bold">Comment:</h1>
+              <h4 className="font-semibold mb-2 text-sm sm:text-base">
+                Comment
+              </h4>
               <textarea
                 name="comment"
                 value={commentData.comment}
@@ -174,72 +148,82 @@ const ReviewPage = ({ id, host }) => {
                   }))
                 }
                 placeholder="Share your experience..."
-                className="textarea textarea-warning w-[500px] mt-3 mb-3"
+                className="textarea textarea-warning w-full min-h-[100px] text-sm sm:text-base focus:ring-2 focus:ring-yellow-400 transition-all"
               ></textarea>
             </div>
 
             {/* Submit */}
-            <div className="flex justify-center mb-3">
+            <div className="flex justify-center">
               <button
                 type="submit"
-                className="btn btn-warning font-bold text-white"
+                className="btn btn-warning text-white font-bold w-full sm:w-auto rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all"
               >
-                Post
+                Post Review
               </button>
             </div>
           </form>
         </div>
-      </center>
-      <div>
-        <h1 className="font-bold text-lg mb-5 border-b-2 p-5 border-yellow-400">
-          See What People Are Saying
-        </h1>
 
-        {comments.length > 0 ? (
-          comments.map((comment, index) => (
-            <div
-              key={index}
-              className="border rounded-xl p-4 my-2 shadow-sm border-yellow-400"
-            >
-              <div className="flex items-center gap-3 mb-5">
-                <img
-                  src={comment.profilePic || "/Images/Logo/profile.png"}
-                  className="w-10 h-10 rounded-full"
-                  alt="Profile"
-                />
-                <div>
-                  <div className="font-semibold">{comment.name}</div>
-                  <div className="text-sm text-gray-500">
-                    {new Date(comment.createdAt).toLocaleString()}
+        {/* Comments List */}
+        <div>
+          <h3 className="font-bold text-lg sm:text-xl mb-4 pb-2 border-b-2 border-yellow-300 flex items-center gap-2">
+            What Guests Are Saying
+          </h3>
+
+          {comments.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {comments.map((comment, index) => (
+                <div
+                  key={index}
+                  className="border border-yellow-300 rounded-xl p-4 shadow-sm bg-gradient-to-br from-white to-yellow-50 hover:shadow-lg transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <img
+                      src={comment.profilePic || "/Images/Logo/profile.png"}
+                      className="w-10 h-10 rounded-full object-cover border-2 border-yellow-300"
+                      alt="Profile"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm sm:text-base">
+                        {comment.name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-sm sm:text-base text-gray-700 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-1 text-xs bg-yellow-100 border border-yellow-300 rounded-full font-semibold">
+                        {comment.interactionType.toUpperCase()}
+                      </span>
+                      <span className="text-yellow-400 text-lg">
+                        {"★".repeat(comment.rating)}
+                        <span className="text-gray-300">
+                          {"★".repeat(5 - comment.rating)}
+                        </span>
+                      </span>
+                    </div>
+
+                    <p className="italic leading-snug text-gray-800">
+                      “{comment.comment}”
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              <div className="mb-1">
-                <span className="font-semibold">Interaction Type:</span>{" "}
-                {comment.interactionType}
-              </div>
-
-              <div className="mb-1">
-                <span className="font-semibold">Rating:</span>{" "}
-                {"★".repeat(comment.rating) + "☆".repeat(5 - comment.rating)}
-              </div>
-
-              <div>
-                <span className="font-semibold">Comment:</span>{" "}
-                {comment.comment}
-              </div>
+              ))}
             </div>
-          ))
-        ) : (
-          <div className="font-bold m-5 p-5 border-2 border-yellow-400 rounded-2xl shadow-md text-center text-2xl">
-            No comments yet.
-            <i className="fa-solid fa-face-frown-open"></i>
-            <br />
-            Be the first to share your experience!
-            <i className="fa-solid fa-face-grin-hearts"></i>
-          </div>
-        )}
+          ) : (
+            <div className="text-center border-2 border-yellow-300 rounded-xl p-8 bg-yellow-50 shadow-inner">
+              <p className="font-semibold text-gray-700 text-base sm:text-lg">
+                No comments yet 😔
+              </p>
+              <p className="text-yellow-600 mt-2">
+                Be the first to share your experience 🌟
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <ToastContainer />

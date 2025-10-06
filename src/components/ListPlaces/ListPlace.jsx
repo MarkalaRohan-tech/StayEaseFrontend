@@ -21,7 +21,7 @@ const steps = [
 
 const ListPlace = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 for next, -1 for previous
+  const [direction, setDirection] = useState(1);
   const { formData, updatedFormData } = useFormData({});
 
   const handleNext = (stepData) => {
@@ -114,20 +114,20 @@ const ListPlace = () => {
       default:
         return (
           <motion.div
-            className="w-full h-full flex justify-center items-center"
+            className="w-full h-full flex justify-center items-center p-4"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
             <div className="text-center">
               <motion.div
-                className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                className="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               >
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-6 h-6 sm:w-8 sm:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -140,8 +140,10 @@ const ListPlace = () => {
                   />
                 </svg>
               </motion.div>
-              <h2 className="text-2xl font-bold text-gray-800">Completed!</h2>
-              <p className="text-gray-600">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                Completed!
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600 mt-2">
                 Your listing has been created successfully.
               </p>
             </div>
@@ -150,7 +152,6 @@ const ListPlace = () => {
     }
   };
 
-  // Animation variants for the main container
   const containerVariants = {
     initial: { opacity: 0, y: 20 },
     animate: {
@@ -163,7 +164,6 @@ const ListPlace = () => {
     },
   };
 
-  // Animation variants for step content
   const stepVariants = {
     initial: (direction) => ({
       x: direction > 0 ? 300 : -300,
@@ -194,7 +194,6 @@ const ListPlace = () => {
     }),
   };
 
-  // Animation variants for the step title
   const titleVariants = {
     initial: { opacity: 0, y: -20 },
     animate: {
@@ -204,7 +203,6 @@ const ListPlace = () => {
     },
   };
 
-  // Animation variants for the form container
   const formContainerVariants = {
     initial: { opacity: 0, scale: 0.95 },
     animate: {
@@ -219,13 +217,14 @@ const ListPlace = () => {
 
   return (
     <motion.div
-      className="absolute top-20 w-full min-h-screen flex flex-col items-center justify-start bg-white py-6"
+      className="min-h-screen w-full bg-gray-50 pt-4 sm:pt-6 lg:pt-8 px-3 sm:px-4 lg:px-6 pb-8"
       variants={containerVariants}
       initial="initial"
       animate="animate"
     >
-      {/* Animated Progress Tracker */}
+      {/* Progress Tracker */}
       <motion.div
+        className="mb-6 sm:mb-8"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -235,24 +234,24 @@ const ListPlace = () => {
 
       {/* Main Form Container */}
       <motion.div
-        className="w-[90%] md:w-[60%] bg-white shadow-2xl p-8 rounded-2xl mt-6 border border-yellow-200"
+        className="w-full max-w-4xl mx-auto bg-white shadow-xl p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-yellow-200"
         variants={formContainerVariants}
         initial="initial"
         animate="animate"
       >
-        {/* Animated Step Title */}
+        {/* Step Title */}
         <motion.h2
-          className="text-center font-bold text-2xl mb-8 bg-gradient-to-r from-yellow-600 to-orange-500 bg-clip-text text-transparent"
+          className="text-center font-bold text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 bg-gradient-to-r from-yellow-600 to-orange-500 bg-clip-text text-transparent"
           variants={titleVariants}
-          key={currentStep} // Force re-animation on step change
+          key={currentStep}
           initial="initial"
           animate="animate"
         >
           Step {currentStep + 1}: {steps[currentStep]}
         </motion.h2>
 
-        {/* Animated Step Content */}
-        <div>
+        {/* Step Content */}
+        <div className="min-h-[400px] sm:min-h-[450px]">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentStep}
@@ -268,9 +267,9 @@ const ListPlace = () => {
           </AnimatePresence>
         </div>
 
-        {/* Animated Step Indicator Dots */}
+        {/* Step Indicator Dots */}
         <motion.div
-          className="flex justify-center space-x-2 mt-8"
+          className="flex justify-center space-x-2 mt-6 sm:mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.4 }}
@@ -278,12 +277,12 @@ const ListPlace = () => {
           {steps.map((_, index) => (
             <motion.div
               key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              className={`h-2 rounded-full transition-all duration-300 ${
                 index === currentStep
                   ? "bg-gradient-to-r from-yellow-400 to-orange-400 w-8"
                   : index < currentStep
-                  ? "bg-green-400"
-                  : "bg-gray-300"
+                  ? "bg-green-400 w-2"
+                  : "bg-gray-300 w-2"
               }`}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -298,10 +297,10 @@ const ListPlace = () => {
         </motion.div>
       </motion.div>
 
-      {/* Floating Action Hint */}
+      {/* Floating Action Hint - Hidden on mobile */}
       {currentStep < steps.length - 1 && (
         <motion.div
-          className="fixed bottom-8 right-8 bg-yellow-400 text-white p-3 rounded-full shadow-lg cursor-pointer z-50"
+          className="hidden sm:flex fixed bottom-8 right-8 bg-yellow-400 text-white p-3 rounded-full shadow-lg cursor-pointer z-50"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 1, type: "spring", stiffness: 200 }}

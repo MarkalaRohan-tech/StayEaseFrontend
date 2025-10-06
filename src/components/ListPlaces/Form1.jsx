@@ -1,7 +1,6 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 
-const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
-
+const Form1 = ({ onSubmit, onPrev, defaultValues }) => {
   const [address, setAddress] = useState({
     fullAddress: defaultValues.fullAddress || "",
     locality: defaultValues.locality || "",
@@ -14,8 +13,6 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
 
   const [rentType, setRentType] = useState(defaultValues.rentType || "local");
 
-
-  // Handlers
   const handleRentTypeChange = (e) => {
     setRentType(e.target.value);
   };
@@ -25,7 +22,6 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
     setAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Save step data to session & move to next
   const handleNext = (e) => {
     e.preventDefault();
     const propertyData = {
@@ -35,13 +31,13 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
     onSubmit(propertyData);
   };
 
-
   return (
-    <form onSubmit={handleNext}>
-      <div className="flex flex-col justify-start gap-5 items-center my-5 mx-3 p-5">
-        <label className="label font-semibold">Rent Type</label>
-        <div className="flex flex-row w-full justify-center gap-5">
-          <div className="flex items-center gap-2">
+    <form onSubmit={handleNext} className="space-y-4 sm:space-y-6">
+      {/* Rent Type */}
+      <div className="flex flex-col items-center gap-3 sm:gap-4">
+        <label className="font-semibold text-base sm:text-lg">Rent Type</label>
+        <div className="flex flex-col sm:flex-row w-full justify-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-2 justify-center">
             <input
               type="radio"
               id="rentTypeLocal"
@@ -51,9 +47,14 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
               checked={rentType === "local"}
               onChange={handleRentTypeChange}
             />
-            <label htmlFor="rentTypeLocal">Local Rent</label>
+            <label
+              htmlFor="rentTypeLocal"
+              className="text-sm sm:text-base cursor-pointer"
+            >
+              Local Rent
+            </label>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-center">
             <input
               type="radio"
               id="rentTypeTour"
@@ -63,17 +64,25 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
               checked={rentType === "tour"}
               onChange={handleRentTypeChange}
             />
-            <label htmlFor="rentTypeTour">Tour Rent</label>
+            <label
+              htmlFor="rentTypeTour"
+              className="text-sm sm:text-base cursor-pointer"
+            >
+              Tour Rent
+            </label>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-        <div>
-          <label className="label font-semibold">Full Address</label>
+      {/* Address Fields */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="sm:col-span-2">
+          <label className="label font-semibold text-sm sm:text-base">
+            Full Address
+          </label>
           <textarea
             name="fullAddress"
-            className="textarea textarea-bordered w-full"
+            className="textarea textarea-bordered w-full text-sm sm:text-base"
             rows="3"
             value={address.fullAddress}
             onChange={handleAddressChange}
@@ -82,11 +91,13 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
 
         <div>
-          <label className="label font-semibold">Locality</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Locality
+          </label>
           <input
             type="text"
             name="locality"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={address.locality}
             onChange={handleAddressChange}
             required
@@ -94,11 +105,13 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
 
         <div>
-          <label className="label font-semibold">Area</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Area
+          </label>
           <input
             type="text"
             name="area"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={address.area}
             onChange={handleAddressChange}
             required
@@ -106,11 +119,13 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
 
         <div>
-          <label className="label font-semibold">City</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            City
+          </label>
           <input
             type="text"
             name="city"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={address.city}
             onChange={handleAddressChange}
             required
@@ -118,11 +133,13 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
 
         <div>
-          <label className="label font-semibold">State</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            State
+          </label>
           <input
             type="text"
             name="state"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={address.state}
             onChange={handleAddressChange}
             required
@@ -130,11 +147,13 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
 
         <div>
-          <label className="label font-semibold">Pincode</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Pincode
+          </label>
           <input
             type="text"
             name="pincode"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={address.pincode}
             onChange={handleAddressChange}
             required
@@ -142,28 +161,34 @@ const Form1 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
 
         <div>
-          <label className="label font-semibold">Country</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Country
+          </label>
           <input
             type="text"
             name="country"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={address.country}
             onChange={handleAddressChange}
             required
           />
         </div>
       </div>
-      <div className="flex mt-5 justify-between">
+
+      {/* Navigation Buttons */}
+      <div className="flex flex-col sm:flex-row mt-6 gap-3 sm:gap-0 justify-between">
         <button
           type="button"
           onClick={onPrev}
-          className="btn btn-outline btn-warning"
-          disabled={false} // disable only on step 0
+          className="btn btn-outline btn-warning w-full sm:w-auto order-2 sm:order-1"
+          disabled={false}
         >
           Previous
         </button>
-
-        <button type="submit" className="btn btn-warning">
+        <button
+          type="submit"
+          className="btn btn-warning w-full sm:w-auto order-1 sm:order-2"
+        >
           Next
         </button>
       </div>

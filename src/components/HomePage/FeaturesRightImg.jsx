@@ -1,26 +1,37 @@
-import React from 'react'
+import React from "react";
 
-const FeaturesRightImg = ({src,heading,description}) => {
+const FeaturesRightImg = ({ src, heading, description }) => {
   return (
-    <div className="flex flex-row w-[90%] justify-evenly items-center">
-      <div className="w-1/2">
-        <h1 className="pacifico-regular text-center text-4xl m-3 font-bold text-yellow-400 text-shadow-lg">
+    <div className="flex flex-col lg:flex-row w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 justify-center lg:justify-between items-center gap-6 lg:gap-12">
+      {/* Text Content - First on mobile, first on desktop */}
+      <div className="w-full lg:w-1/2 order-1 lg:order-1">
+        <h1 className="pacifico-regular text-center lg:text-left text-2xl xs:text-3xl sm:text-4xl lg:text-4xl xl:text-5xl mb-4 sm:mb-6 font-bold text-yellow-400 text-shadow-lg leading-tight">
           {heading}
         </h1>
-        <p className="roboto font-semibold text-justify text-black ">
+        <p className="roboto font-semibold text-justify lg:text-left text-black text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0">
           {description}
         </p>
       </div>
-      <div className="w-[400px] h-[350px] flex justify-center items-center relative">
-        <img
-          className="absolute w-[300px] h-[300px]"
-          src="/Images/Logo/Yellow_Blob.png"
-          alt="blob"
-        />
-        <img className="absolute w-[170px] h-[170px]" src={src} alt="LogoImg" />
+
+      {/* Image Container - Second on mobile, second on desktop */}
+      <div className="w-full lg:w-1/2 order-2 lg:order-2 flex justify-center lg:justify-end">
+        <div className="relative w-64 h-64 xs:w-72 xs:h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[350px] flex justify-center items-center">
+          {/* Background Blob */}
+          <img
+            className="absolute w-48 h-48 xs:w-56 xs:h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-[300px] lg:h-[300px] object-contain"
+            src="/Images/Logo/Yellow_Blob.png"
+            alt="blob"
+          />
+          {/* Feature Icon */}
+          <img
+            className="absolute w-24 h-24 xs:w-28 xs:h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-[170px] lg:h-[170px] object-contain z-10"
+            src={src}
+            alt="Feature Icon"
+          />
+        </div>
       </div>
     </div>
   );
-}
+};
 
-export default FeaturesRightImg
+export default FeaturesRightImg;

@@ -7,7 +7,6 @@ const Form5 = ({ onSubmit, onPrev, defaultValues }) => {
     email: "",
   });
 
-  // update state whenever defaultValues change
   useEffect(() => {
     if (defaultValues) {
       setOwner({
@@ -37,14 +36,16 @@ const Form5 = ({ onSubmit, onPrev, defaultValues }) => {
   return (
     <form
       onSubmit={handleNext}
-      className="flex flex-col gap-4 max-w-md mx-auto"
+      className="flex flex-col gap-4 sm:gap-5 max-w-2xl mx-auto"
     >
       <div>
-        <label className="label font-semibold">Owner Name</label>
+        <label className="label font-semibold text-sm sm:text-base">
+          Owner Name
+        </label>
         <input
           type="text"
           name="name"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full text-sm sm:text-base"
           value={owner.name}
           onChange={handleChange}
           required
@@ -52,11 +53,11 @@ const Form5 = ({ onSubmit, onPrev, defaultValues }) => {
       </div>
 
       <div>
-        <label className="label font-semibold">Phone</label>
+        <label className="label font-semibold text-sm sm:text-base">Phone</label>
         <input
           type="tel"
           name="phone"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full text-sm sm:text-base"
           value={owner.phone}
           onChange={handleChange}
           required
@@ -64,27 +65,26 @@ const Form5 = ({ onSubmit, onPrev, defaultValues }) => {
       </div>
 
       <div>
-        <label className="label font-semibold">Email</label>
+        <label className="label font-semibold text-sm sm:text-base">Email</label>
         <input
           type="email"
           name="email"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full text-sm sm:text-base"
           value={owner.email}
           onChange={handleChange}
           required
         />
       </div>
 
-      <div className="flex mt-5 justify-between">
+      <div className="flex flex-col sm:flex-row mt-6 gap-3 sm:gap-0 justify-between">
         <button
           type="button"
           onClick={onPrev}
-          className="btn btn-outline btn-warning"
+          className="btn btn-outline btn-warning w-full sm:w-auto order-2 sm:order-1"
         >
           Previous
         </button>
-
-        <button type="submit" className="btn btn-warning">
+        <button type="submit" className="btn btn-warning w-full sm:w-auto order-1 sm:order-2">
           Next
         </button>
       </div>

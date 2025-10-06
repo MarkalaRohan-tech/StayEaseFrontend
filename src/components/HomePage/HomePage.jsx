@@ -1,8 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../Context/UserContext";
 import { features, images } from "./data.js";
 import FeaturesRightImg from "./FeaturesRightImg";
@@ -14,11 +10,12 @@ import { handleSuccess } from "../../utils.js";
 import { ToastContainer } from "react-toastify";
 
 const HomePage = () => {
-  const { user,logout } = useAuth();
+  const { user, logout } = useAuth();
   const sliderRef = useRef(null);
   const [index, setIndex] = useState(0);
-  const imageWidth = window.innerWidth;
+  const [imageWidth, setImageWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
+
   const handleLogout = () => {
     logout();
     handleSuccess("Logged out Successfully");
@@ -26,6 +23,17 @@ const HomePage = () => {
       navigate("/login");
     }, 1000);
   };
+
+  // Handle window resize for responsive slider
+  useEffect(() => {
+    const handleResize = () => {
+      setImageWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedName = localStorage.getItem("loggedInUser");
@@ -55,8 +63,8 @@ const HomePage = () => {
   return (
     <>
       {/* Hero Section */}
-      <div className="relative flex bg-white justify-center pt-5 mt-5 items-center h-[100vh] w-[100vw] overflow-hidden">
-        <div className="sliderContainer relative w-full h-[100vh] overflow-hidden">
+      <div className="relative flex bg-white justify-center items-center min-h-screen w-full overflow-hidden">
+        <div className="sliderContainer relative w-full h-screen overflow-hidden">
           <div
             ref={sliderRef}
             className="slider relative h-full flex transition-transform duration-700 ease-in"
@@ -89,15 +97,20 @@ const HomePage = () => {
             })}
           </div>
         </div>
-        <div className="bg-white/50 w-full h-full flex flex-col justify-center items-center gap-3 absolute z-10">
+
+        {/* Hero Content Overlay */}
+        <div className="bg-white/50 w-full h-full flex flex-col justify-center items-center gap-3 sm:gap-4 lg:gap-6 absolute z-10 px-4">
           <img
             src="/Images/Logo/logo3.png"
-            className="w-[200px] rounded-full shadow-2xl h-[200px]"
+            className="w-24 h-24 xs:w-32 xs:h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-[200px] lg:h-[200px] rounded-full shadow-2xl object-contain"
             alt="Logo"
           />
           <h1
-            className="pacifico-regular text-center text-5xl font-bold text-yellow-400"
-            style={{ WebkitTextStroke: "1.5px black" }}
+            className="pacifico-regular text-center text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-yellow-400 px-4 leading-tight"
+            style={{
+              WebkitTextStroke: "1px black",
+              textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+            }}
           >
             Check-in to comfort, Checkout with ease.
           </h1>
@@ -105,54 +118,56 @@ const HomePage = () => {
       </div>
 
       {/* Features Section */}
-      <h1 className="pacifico-regular text-center text-6xl p-5 m-5 font-bold text-yellow-400 text-shadow-lg">
-        Features
-      </h1>
-      <div className="flex flex-col justify-center items-center">
-        {features.map((feature) =>
-          feature.idx % 2 !== 0 ? (
-            <FeaturesRightImg
-              key={feature.idx}
-              src={feature.icon}
-              heading={feature.title}
-              description={feature.description}
-            />
-          ) : (
-            <FeaturesLeftImg
-              key={feature.idx}
-              src={feature.icon}
-              heading={feature.title}
-              description={feature.description}
-            />
-          )
-        )}
+      <div className="py-8 sm:py-12 lg:py-16">
+        <h1 className="pacifico-regular text-center text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12 lg:mb-16 font-bold text-yellow-400 text-shadow-lg">
+          Features
+        </h1>
+        <div className="flex flex-col justify-center items-center space-y-8 sm:space-y-12 lg:space-y-16">
+          {features.map((feature) =>
+            feature.idx % 2 !== 0 ? (
+              <FeaturesRightImg
+                key={feature.idx}
+                src={feature.icon}
+                heading={feature.title}
+                description={feature.description}
+              />
+            ) : (
+              <FeaturesLeftImg
+                key={feature.idx}
+                src={feature.icon}
+                heading={feature.title}
+                description={feature.description}
+              />
+            )
+          )}
+        </div>
       </div>
 
       {/* CTA Section */}
-      <div className="flex flex-col justify-center mb-5 pb-5 items-center gap-5">
-        <h1 className="pacifico-regular text-center text-4xl m-3 font-bold text-yellow-400 text-shadow-lg">
+      <div className="flex flex-col justify-center items-center gap-4 sm:gap-6 lg:gap-8 py-8 sm:py-12 lg:py-16 px-4">
+        <h1 className="pacifico-regular text-center text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-400 text-shadow-lg max-w-4xl leading-tight">
           To Explore more be one of us
         </h1>
-        <div className="flex flex-row justify-center mb-5 pb-5 items-center gap-5">
+        <div className="flex flex-col xs:flex-row justify-center items-center gap-3 sm:gap-4 lg:gap-6 w-full max-w-md">
           {user ? (
-            <NavLink to="/login">
-            <button
-              onClick={handleLogout}
-              className="btn btn-warning shadow-lg hover:shadow-xl"
-            >
-              <b>Logout</b>
-            </button>
-          </NavLink>
+            <NavLink to="/login" className="w-full xs:w-auto">
+              <button
+                onClick={handleLogout}
+                className="w-full xs:w-auto bg-yellow-400 hover:bg-yellow-500 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
+              >
+                Logout
+              </button>
+            </NavLink>
           ) : (
             <>
-              <NavLink to="/login">
-                <button className="btn btn-warning shadow-lg hover:shadow-xl">
-                  <b>Login</b>
+              <NavLink to="/login" className="w-full xs:w-auto">
+                <button className="w-full xs:w-auto bg-yellow-400 hover:bg-yellow-500 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
+                  Login
                 </button>
               </NavLink>
-              <NavLink to="/register">
-                <button className="btn btn-warning shadow-lg hover:shadow-xl">
-                  <b>Register</b>
+              <NavLink to="/register" className="w-full xs:w-auto">
+                <button className="w-full xs:w-auto bg-yellow-400 hover:bg-yellow-500 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
+                  Register
                 </button>
               </NavLink>
             </>

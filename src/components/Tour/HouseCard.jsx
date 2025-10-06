@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../Context/UserContext";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
@@ -15,27 +15,38 @@ const HouseCard = ({
   setLikedProperties,
 }) => {
   const { user } = useAuth();
+  const [fav, setFav] = useState(
+    likedProperties?.includes(String(id)) || false
+  );
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ derive directly from parent state
-  const isFav = likedProperties?.includes(String(id));
+  // ✅ Update local fav when parent likedProperties changes
+  useEffect(() => {
+    setFav(likedProperties?.includes(String(id)) || false);
+  }, [likedProperties, id]);
 
   const toggleFav = async () => {
     if (!user || isLoading) return;
+
+    const nextFav = !fav;
+    setFav(nextFav); // instant UI feedback
     setIsLoading(true);
 
     try {
-      if (isFav) {
-        // Unlike
-        const res = await axios.delete(`/api/user/${user._id}/like/${id}`);
-        setLikedProperties(res.data); // backend should return updated IDs
-      } else {
+      if (nextFav) {
         // Like
-        const res = await axios.post(`/api/user/${user._id}/like/${id}`);
-        setLikedProperties(res.data);
+        await axios.post(`/api/user/${user._id}/like/${id}`);
+        setLikedProperties((prev) =>
+          Array.from(new Set([...prev, String(id)]))
+        );
+      } else {
+        // Unlike
+        await axios.delete(`/api/user/${user._id}/like/${id}`);
+        setLikedProperties((prev) => prev.filter((pid) => pid !== String(id)));
       }
     } catch (err) {
       console.error("Error toggling fav:", err);
+      setFav(!nextFav); // revert UI on error
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +95,7 @@ const HouseCard = ({
               isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {isFav ? (
+            {fav ? (
               <i
                 style={{ WebkitTextStroke: "1.5px black" }}
                 className="fa-solid fa-heart text-2xl text-red-500"

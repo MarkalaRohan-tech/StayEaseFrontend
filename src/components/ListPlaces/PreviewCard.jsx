@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useFormData } from "../../Context/FormContext";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -39,10 +39,7 @@ const PreviewCard = ({ onPrev }) => {
         );
       }
 
-      // parse JSON directly
       const data = await response.json();
-
-      console.log("Parsed response data:", data);
 
       if (data.success) {
         const rentType = formData.rentType;
@@ -64,7 +61,6 @@ const PreviewCard = ({ onPrev }) => {
           "Error creating property: " + (data.message || "Unknown error")
         );
       }
-
     } catch (error) {
       console.error("Fetch error:", error);
 
@@ -79,56 +75,56 @@ const PreviewCard = ({ onPrev }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-      <div className="card bg-base-100 rounded-2xl transition-all ease-in shadow-md hover:shadow-xl w-[60%] overflow-hidden">
-        <figure className="h-52 overflow-hidden">
+    <div className="w-full flex flex-col gap-4 sm:gap-6 items-center px-2 sm:px-4">
+      <div className="card bg-base-100 rounded-xl sm:rounded-2xl transition-all ease-in shadow-md hover:shadow-xl w-full max-w-2xl overflow-hidden">
+        <figure className="h-48 sm:h-56 md:h-64 overflow-hidden">
           <img
             src={formData.imageUrls?.[0] || "/placeholder.jpg"}
             alt={formData.title || "Property Title"}
             className="object-cover w-full h-full"
           />
         </figure>
-        <div className="card-body">
-          <h2 className="card-title text-lg font-semibold text-gray-800">
+        <div className="card-body p-4 sm:p-6">
+          <h2 className="card-title text-base sm:text-lg md:text-xl font-semibold text-gray-800">
             {formData.title || "Property Title"}
           </h2>
-          <p>
+          <p className="text-sm sm:text-base">
             <b>Area:</b> {formData.location.area || "Not specified"}
           </p>
-          <p>
+          <p className="text-sm sm:text-base">
             <b>Price:</b> ₹{formData.price?.toLocaleString("en-IN")}
           </p>
           <div>
-            <b>Amenities:</b>
+            <b className="text-sm sm:text-base">Amenities:</b>
             <ul className="flex flex-wrap gap-2 mt-2">
               {formData.amenities?.length > 0 ? (
                 formData.amenities.map((amenity, index) => (
                   <li
                     key={index}
-                    className="rounded-2xl border border-yellow-400 bg-yellow-100 text-yellow-800 px-3 py-1 text-sm"
+                    className="rounded-full sm:rounded-2xl border border-yellow-400 bg-yellow-100 text-yellow-800 px-2 sm:px-3 py-1 text-xs sm:text-sm"
                   >
                     {amenity}
                   </li>
                 ))
               ) : (
-                <span className="text-gray-400 ml-1">None</span>
+                <span className="text-gray-400 ml-1 text-sm">None</span>
               )}
             </ul>
           </div>
         </div>
       </div>
-      <div className="flex w-full mt-5 justify-between items-center">
+
+      <div className="flex flex-col sm:flex-row w-full max-w-2xl gap-3 sm:gap-0 justify-between items-center">
         <button
           type="button"
           onClick={onPrev}
-          className="btn btn-outline btn-warning"
-          disabled={false}
+          className="btn btn-outline btn-warning w-full sm:w-auto order-2 sm:order-1"
         >
           Previous
         </button>
         <button
           onClick={handleConfirm}
-          className="btn btn-warning text-white font-bold"
+          className="btn btn-warning text-white font-bold w-full sm:w-auto order-1 sm:order-2"
         >
           Confirm & Submit
         </button>

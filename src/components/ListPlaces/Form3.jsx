@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-const Form3 = ({ onSubmit,onPrev, defaultValues }) => {
-
+const Form3 = ({ onSubmit, onPrev, defaultValues }) => {
   const amenitiesList = [
     "Lift",
     "Parking",
@@ -41,7 +40,6 @@ const Form3 = ({ onSubmit,onPrev, defaultValues }) => {
     }));
   };
 
-
   const handleAmenityChange = (e) => {
     const { value, checked } = e.target;
     setDetails((prev) => {
@@ -58,51 +56,56 @@ const Form3 = ({ onSubmit,onPrev, defaultValues }) => {
   };
 
   return (
-    <form onSubmit={handleNext} className="space-y-5">
+    <form onSubmit={handleNext} className="space-y-4 sm:space-y-6">
       <div>
-        <label className="label font-semibold">Keyword</label>
+        <label className="label font-semibold text-sm sm:text-base">
+          Keyword
+        </label>
         <input
           type="text"
           name="keyword"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full text-sm sm:text-base"
           value={details.keyword}
           onChange={handleChange}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-        {/* Bedrooms */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label className="label font-semibold">Bedrooms</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Bedrooms
+          </label>
           <input
             type="number"
             name="bedrooms"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={details.bedrooms}
             min={0}
             onChange={handleChange}
           />
         </div>
 
-        {/* Bathrooms */}
         <div>
-          <label className="label font-semibold">Bathrooms</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Bathrooms
+          </label>
           <input
             type="number"
             name="bathrooms"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={details.bathrooms}
             min={0}
             onChange={handleChange}
           />
         </div>
 
-        {/* Property Type */}
         <div>
-          <label className="label font-semibold">Property Type</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Property Type
+          </label>
           <select
             name="propertyType"
-            className="select select-bordered w-full"
+            className="select select-bordered w-full text-sm sm:text-base"
             value={details.propertyType}
             onChange={handleChange}
           >
@@ -113,62 +116,63 @@ const Form3 = ({ onSubmit,onPrev, defaultValues }) => {
           </select>
         </div>
 
-        {/* Size */}
         <div>
-          <label className="label font-semibold">Size (e.g. 2000 sq.ft)</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Size (e.g. 2000 sq.ft)
+          </label>
           <input
             type="text"
             name="size"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={details.size}
             onChange={handleChange}
           />
         </div>
 
-        {/* Furnished */}
-        <div className="flex items-center gap-2 mt-6">
+        <div className="flex items-center gap-2 mt-2 sm:mt-4">
           <input
             type="checkbox"
             name="furnished"
-            className="checkbox"
+            className="checkbox checkbox-warning"
             checked={details.furnished}
             onChange={handleChange}
           />
-          <span>Furnished</span>
+          <span className="text-sm sm:text-base">Furnished</span>
         </div>
 
-        {/* Pet Friendly */}
-        <div className="flex items-center gap-2 mt-6">
+        <div className="flex items-center gap-2 mt-2 sm:mt-4">
           <input
             type="checkbox"
             name="petFriendly"
-            className="checkbox"
+            className="checkbox checkbox-warning"
             checked={details.petFriendly}
             onChange={handleChange}
           />
-          <span>Pet Friendly</span>
+          <span className="text-sm sm:text-base">Pet Friendly</span>
         </div>
 
-        {/* Floor */}
         <div>
-          <label className="label font-semibold">Floor</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Floor
+          </label>
           <input
             type="number"
             name="floor"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={details.floor}
             min={0}
             onChange={handleChange}
           />
         </div>
 
-        {/* Total Floors */}
         <div>
-          <label className="label font-semibold">Total Floors</label>
+          <label className="label font-semibold text-sm sm:text-base">
+            Total Floors
+          </label>
           <input
             type="number"
             name="totalFloors"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full text-sm sm:text-base"
             value={details.totalFloors}
             min={0}
             onChange={handleChange}
@@ -176,37 +180,41 @@ const Form3 = ({ onSubmit,onPrev, defaultValues }) => {
         </div>
       </div>
 
-      {/* Amenities */}
       <div>
-        <label className="label font-semibold text-center mb-5">
+        <label className="label font-semibold text-center text-sm sm:text-base mb-3">
           Amenities
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
           {amenitiesList.map((amenity) => (
-            <label key={amenity} className="flex items-center gap-2">
+            <label
+              key={amenity}
+              className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+            >
               <input
                 type="checkbox"
                 value={amenity}
                 checked={details.amenities.includes(amenity)}
                 onChange={handleAmenityChange}
-                className="checkbox"
+                className="checkbox checkbox-warning checkbox-sm"
               />
-              {amenity}
+              <span className="text-sm sm:text-base">{amenity}</span>
             </label>
           ))}
         </div>
       </div>
-      <div className="flex mt-5 justify-between">
+
+      <div className="flex flex-col sm:flex-row mt-6 gap-3 sm:gap-0 justify-between">
         <button
           type="button"
           onClick={onPrev}
-          className="btn btn-outline btn-warning"
-          disabled={false} // disable only on step 0
+          className="btn btn-outline btn-warning w-full sm:w-auto order-2 sm:order-1"
         >
           Previous
         </button>
-
-        <button type="submit" className="btn btn-warning">
+        <button
+          type="submit"
+          className="btn btn-warning w-full sm:w-auto order-1 sm:order-2"
+        >
           Next
         </button>
       </div>

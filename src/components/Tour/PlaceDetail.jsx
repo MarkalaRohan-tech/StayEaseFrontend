@@ -1,5 +1,5 @@
 import { useParams, NavLink } from "react-router-dom";
-import { useRef, useState, useEffect, use } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleError, handleSuccess } from "../../utils";
 import { ToastContainer } from "react-toastify";
@@ -16,7 +16,6 @@ const PlaceDetail = () => {
   const [place, setPlace] = useState(null);
   const navigate = useNavigate();
   const [recommendation, setRecommendation] = useState([]);
-  
   const [selectedDates, setSelectedDates] = useState(null);
 
   useEffect(() => {
@@ -61,11 +60,11 @@ const PlaceDetail = () => {
 
   if (!place) {
     return (
-      <div className="absolute flex flex-col justify-center items-center top-20 p-5 m-5 w-full">
-        <div className="flex justify-center items-center h-[50vh]">
-          <span className="loading loading-spinner loading-lg text-yellow-400"></span>
-          <span className="ml-4 text-xl">Loading property details...</span>
-        </div>
+      <div className="min-h-screen flex flex-col justify-center items-center px-4">
+        <span className="loading loading-spinner loading-lg text-yellow-400"></span>
+        <span className="ml-4 text-base sm:text-xl mt-4">
+          Loading property details...
+        </span>
       </div>
     );
   }
@@ -82,7 +81,6 @@ const PlaceDetail = () => {
 
     return place.price * nights;
   };
-
 
   const handlePayment = async (totalAmount, selectedDates) => {
     if (!selectedDates || totalAmount <= 0) {
@@ -117,7 +115,7 @@ const PlaceDetail = () => {
               userId: user._id,
               placeId: place._id,
               paymentId: verifyRes.data.paymentId,
-              amount: totalAmount, // ✅ send totalAmount
+              amount: totalAmount,
               startDate: selectedDates.startDate,
               endDate: selectedDates.endDate,
             };
@@ -146,20 +144,21 @@ const PlaceDetail = () => {
     }
   };
 
-
-
   return (
-    <div className="absolute flex flex-col justify-center items-center top-20 p-5 m-5 w-full">
-      <div className="p-3 rounded-xl w-[95vw] border-b-2 border-yellow-400 shadow-lg">
-        <h1 className="text-yellow-400 w-full text-center text-shadow-lg font-bold roboto text-4xl">
-          {place?.title}
-        </h1>
-      </div>
-      <div className="grid m-5 p-5 gap-5 w-full h-[100vh] grid-cols-1">
-        <div className="h-full w-full flex flex-col justify-start items-center">
-          <div className="w-4/5 max-w-4xl mx-auto">
-            <div className="carousel w-full h-[55vh]  border-4 border-yellow-400 rounded-xl overflow-hidden shadow-xl">
-              {/* ✅ Fixed property name from images to imageUrls */}
+    <div className="min-h-screen w-full bg-gray-50">
+      <div className="w-full px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg border-b-4 border-yellow-400 p-4 sm:p-6 mb-4 sm:mb-6">
+          <h1 className="text-yellow-400 text-center text-shadow-lg font-bold roboto text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+            {place?.title}
+          </h1>
+        </div>
+
+        {/* Main Content */}
+        <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+          {/* Image Carousel */}
+          <div className="w-full max-w-5xl mx-auto">
+            <div className="carousel w-full h-48 xs:h-64 sm:h-80 md:h-96 lg:h-[400px] border-4 border-yellow-400 rounded-xl overflow-hidden shadow-xl">
               {place?.imageUrls?.map((src, index) => (
                 <div
                   key={index}
@@ -168,18 +167,18 @@ const PlaceDetail = () => {
                 >
                   <img
                     src={src}
-                    className="w-full h-96 object-contain"
+                    className="w-full h-full object-cover"
                     alt={`Slide ${index + 1}`}
                   />
                 </div>
               ))}
             </div>
-            <div className="flex justify-center mt-4 gap-3">
+            <div className="flex justify-center mt-4 gap-2 sm:gap-3">
               {[0, 1, 2, 3].map((i) => (
                 <button
                   key={i}
                   onClick={() => handleScroll(i)}
-                  className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
+                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full cursor-pointer transition-all duration-300 ${
                     i === activeIndex
                       ? "bg-yellow-400 scale-110 shadow"
                       : "bg-gray-200"
@@ -188,107 +187,145 @@ const PlaceDetail = () => {
               ))}
             </div>
           </div>
-          <div className="roboto m-5">
-            <div className="flex flex-row mb-5 p-5 w-full justify-around items-center shadow-lg rounded-2xl border-4 border-yellow-400">
-              <p className="flex items-center justify-around gap-5 border-r-4 border-yellow-400">
-                <p className="text-2xl text-yellow-400 text-shadow-lg font-bold">
+
+          {/* Host Contact & Price Section */}
+          <div className="bg-white rounded-2xl shadow-lg border-4 border-yellow-400 p-4 sm:p-6">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-center justify-between">
+              {/* Host Contact Info */}
+              <div className="flex-1">
+                <h2 className="text-lg sm:text-xl lg:text-2xl text-yellow-400 font-bold mb-3 sm:mb-4">
                   Connect with Host:
-                </p>
-                <div className="flex items-center justify-center text-lg mr-5">
-                  <UserCircle />
-                  &nbsp;{place?.ownerContact?.name}
-                </div>
-                <div className="flex items-center justify-center text-lg mr-5">
-                  <Mail />
-                  &nbsp;{place?.ownerContact?.email}
-                </div>
-                <div className="flex items-center justify-center text-lg mr-5">
-                  <Phone />
-                  &nbsp;{place?.ownerContact?.phone}
-                </div>
-              </p>
-              <p className="text-2xl">
-                <b>Price:&nbsp;</b>
-                &#8377;{place?.price?.toLocaleString("en-IN")} /night
-              </p>
-            </div>
-            <div className="flex flex-col w-full justify-center items-center gap-3">
-              <BookingCalendar
-                propertyId={place?._id}
-                onDateSelect={setSelectedDates} // store in parent
-              />
-              <button
-                onClick={() => handlePayment(getTotalAmount(), selectedDates)}
-                className="btn btn-warning text-white text-2xl shadow-lg"
-                disabled={!selectedDates} // prevent clicking without selection
-              >
-                Book now (₹{getTotalAmount()})
-              </button>
-            </div>
-            <h1 className="text-xl mb-3 font-bold">Description & Details:</h1>
-            <p className="ml-2 mb-3">{place?.description}</p>
-            <h1 className="text-lg mb-3 font-bold">Other Details:</h1>
-            <p className="ml-2 grid grid-cols-2 w-full mb-3">
-              <div className="flex flex-row justify-evenly">
-                <div className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 p-1 px-3 mr-2 mt-2">
-                  Type:&nbsp;
-                  {place?.propertyType}
-                </div>
-                <div className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 p-1 px-3 mr-2 mt-2">
-                  Bedrooms:&nbsp;
-                  {place?.bedrooms}
-                </div>
-                <div className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 p-1 px-3 mr-2 mt-2">
-                  Bathrooms:&nbsp;
-                  {place?.bathrooms}
-                </div>
-                <div className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 p-1 px-3 mr-2 mt-2">
-                  Pet:&nbsp;
-                  {place?.petFriendly ? "Yes" : "No"}
-                </div>
-                <div className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 p-1 px-3 mr-2 mt-2">
-                  Furnished:&nbsp;
-                  {place?.furnished ? "Yes" : "No"}
+                </h2>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <UserCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="truncate">
+                      {place?.ownerContact?.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="truncate">
+                      {place?.ownerContact?.email}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span>{place?.ownerContact?.phone}</span>
+                  </div>
                 </div>
               </div>
-            </p>
-            <h1 className="text-xl mb-3 font-bold">Full Address:</h1>
-            <p className="ml-2 mb-3">{place?.location?.fullAddress}</p>
-            <h1 className="text-xl mb-3 font-bold">Facilities:</h1>
-            <div className="ml-2 mb-3">
-              {place?.amenities?.map((facility, index) => (
-                <li
-                  key={index}
-                  style={{
-                    listStyle: "none",
-                    display: "inline-block",
-                  }}
-                  className="rounded-2xl border-2 border-yellow-400 bg-yellow-200 text-yellow-800 p-1 px-3 mr-2 mt-2"
-                >
-                  {facility}
-                </li>
-              ))}
+
+              {/* Price */}
+              <div className="flex items-center justify-center border-t lg:border-t-0 lg:border-l-4 border-yellow-400 pt-4 lg:pt-0 lg:pl-6">
+                <p className="text-xl sm:text-2xl font-bold whitespace-nowrap">
+                  ₹{place?.price?.toLocaleString("en-IN")}/night
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="w-full">
-            <div className="w-[100%] shadow-lg rounded-2xl border-b-2 border-yellow-400">
-              <div className="font-bold text-center text-2xl text-yellow-400 text-shadow-sm p-3">
-                <h1>Recommendation:</h1>
+          {/* Booking Calendar & Button */}
+          <div className="bg-white rounded-2xl shadow-lg border-4 border-yellow-400 p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold text-center mb-4">
+              Select Your Dates
+            </h2>
+            <div className="flex flex-col items-center gap-4">
+              <BookingCalendar
+                propertyId={place?._id}
+                onDateSelect={setSelectedDates}
+              />
+              <button
+                onClick={() => handlePayment(getTotalAmount(), selectedDates)}
+                className="btn btn-warning text-white text-base sm:text-lg lg:text-xl shadow-lg w-full sm:w-auto"
+                disabled={!selectedDates}
+              >
+                Book now (₹{getTotalAmount().toLocaleString("en-IN")})
+              </button>
+            </div>
+          </div>
+
+          {/* Description & Details */}
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">
+                Description & Details:
+              </h2>
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                {place?.description}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">
+                Other Details:
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 px-3 py-1 text-sm sm:text-base">
+                  Type: {place?.propertyType}
+                </span>
+                <span className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 px-3 py-1 text-sm sm:text-base">
+                  Bedrooms: {place?.bedrooms}
+                </span>
+                <span className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 px-3 py-1 text-sm sm:text-base">
+                  Bathrooms: {place?.bathrooms}
+                </span>
+                <span className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 px-3 py-1 text-sm sm:text-base">
+                  Pet: {place?.petFriendly ? "Yes" : "No"}
+                </span>
+                <span className="rounded-lg border-2 border-yellow-400 bg-yellow-200 text-yellow-800 px-3 py-1 text-sm sm:text-base">
+                  Furnished: {place?.furnished ? "Yes" : "No"}
+                </span>
               </div>
             </div>
 
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">
+                Full Address:
+              </h2>
+              <p className="text-sm sm:text-base text-gray-700">
+                {place?.location?.fullAddress}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">
+                Facilities:
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {place?.amenities?.map((facility, index) => (
+                  <span
+                    key={index}
+                    className="rounded-2xl border-2 border-yellow-400 bg-yellow-200 text-yellow-800 px-3 py-1 text-sm sm:text-base"
+                  >
+                    {facility}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Recommendations */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-yellow-50 border-b-2 border-yellow-400 p-4 sm:p-6">
+              <h2 className="text-center text-xl sm:text-2xl font-bold text-yellow-400">
+                Recommendations
+              </h2>
+            </div>
+
             {recommendation.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-10 m-5">
+              <div className="flex flex-col items-center justify-center p-8 sm:p-10">
                 <div className="animate-bounce mb-4">
-                  <div className="w-16 h-16 border-4 border-yellow-400 rounded-full flex items-center justify-center bg-yellow-100">
-                    <span className="text-2xl text-yellow-600">📍</span>
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-yellow-400 rounded-full flex items-center justify-center bg-yellow-100">
+                    <span className="text-xl sm:text-2xl text-yellow-600">
+                      📍
+                    </span>
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-yellow-600 mb-2 animate-pulse">
+                <h3 className="text-lg sm:text-xl font-bold text-yellow-600 mb-2 text-center">
                   No Recommendations Found
                 </h3>
-                <p className="text-gray-600 text-center max-w-md animate-fade-in">
+                <p className="text-sm sm:text-base text-gray-600 text-center max-w-md px-4">
                   We couldn't find similar properties in your area right now.
                   Check back later for more recommendations!
                 </p>
@@ -305,56 +342,64 @@ const PlaceDetail = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex gap-3 p-5 overflow-x-auto w-full">
-                {recommendation.map((house, index) => (
-                  <div
-                    key={index}
-                    className="flex-none relative w-[500px] h-[350px] rounded-xl overflow-hidden shadow-lg group"
-                  >
-                    <img
-                      src={house.imageUrls[0]}
-                      alt={house.title}
-                      className="w-[500px] h-[350px] object-cover"
-                    />
-
-                    <div className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white p-4 flex flex-col justify-center items-center">
-                      <h2 className="text-lg font-bold text-yellow-400 mb-2">
-                        {house.title}
-                      </h2>
-                      <p>
-                        <span className="font-semibold">Area:</span>{" "}
-                        {house.location.area}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Price:</span> ₹
-                        {house.price}
-                      </p>
-                      <p className="font-semibold mt-2">Facilities:</p>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {house.amenities.map((f, i) => (
-                          <span
-                            key={i}
-                            className="bg-yellow-400 text-black text-sm px-2 py-1 rounded-full"
-                          >
-                            {f}
-                          </span>
-                        ))}
+              <div className="p-4 sm:p-6 overflow-x-auto">
+                <div className="flex gap-3 sm:gap-4 pb-2">
+                  {recommendation.map((house, index) => (
+                    <div
+                      key={index}
+                      className="flex-none relative w-72 sm:w-80 md:w-96 h-56 sm:h-64 md:h-80 rounded-xl overflow-hidden shadow-lg group"
+                    >
+                      <img
+                        src={house.imageUrls[0]}
+                        alt={house.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white p-4 flex flex-col justify-center items-center">
+                        <h3 className="text-base sm:text-lg font-bold text-yellow-400 mb-2 text-center">
+                          {house.title}
+                        </h3>
+                        <p className="text-sm sm:text-base">
+                          <span className="font-semibold">Area:</span>{" "}
+                          {house.location.area}
+                        </p>
+                        <p className="text-sm sm:text-base">
+                          <span className="font-semibold">Price:</span> ₹
+                          {house.price}
+                        </p>
+                        <p className="font-semibold mt-2 text-sm sm:text-base">
+                          Facilities:
+                        </p>
+                        <div className="flex flex-wrap gap-1 sm:gap-2 mt-1 justify-center">
+                          {house.amenities.slice(0, 3).map((f, i) => (
+                            <span
+                              key={i}
+                              className="bg-yellow-400 text-black text-xs sm:text-sm px-2 py-1 rounded-full"
+                            >
+                              {f}
+                            </span>
+                          ))}
+                        </div>
+                        <NavLink to={`/placeDetails/${house._id}`}>
+                          <button className="btn btn-warning btn-sm sm:btn-md mt-3 text-white font-bold">
+                            Explore
+                          </button>
+                        </NavLink>
                       </div>
-                      <NavLink to={`/placeDetails/${house._id}`}>
-                        <button className="btn btn-warning m-5 text-white font-bold">
-                          Explore
-                        </button>
-                      </NavLink>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
+
+          {/* Map */}
+          <Map id={place?._id} />
+
+          {/* Reviews */}
+          <ReviewPage id={place?._id} host={place?.hostedBy} />
         </div>
-        <Map id={place?._id} />
-        <ReviewPage id={place?._id} host={place?.hostedBy} />
       </div>
+
       <ToastContainer
         position="top-center"
         autoClose={5000}
@@ -366,23 +411,6 @@ const PlaceDetail = () => {
         draggable
         pauseOnHover
       />
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

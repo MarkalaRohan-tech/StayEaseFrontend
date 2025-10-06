@@ -7,7 +7,6 @@ import HouseCard from "./HouseCard";
 import { useAuth } from "../../Context/UserContext";
 
 const Tour = () => {
-
   const { user } = useAuth();
   const [propertyData, setPropertyData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,38 +108,81 @@ const Tour = () => {
   }, [user]);
 
   return (
-    <div className="relative w-full h-full">
-      <div className="absolute flex flex-col justify-center items-center top-20 p-5 w-full">
-        <div className="p-3 rounded-xl w-[95vw] flex justify-between border-b-2 border-yellow-400 shadow-lg">
-          <dialog id="my_modal_3" className="modal">
-            <div className="modal-box">
-              <form method="dialog">
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                  ✕
-                </button>
-                <h3 className="font-bold text-center text-2xl text-yellow-400">
-                  Filters
-                </h3>
-                <div className="py-4 flex justify-start gap-2 items-center font-bold">
-                  <span>Place: </span>
-                  <select
-                    value={filters.area}
-                    onChange={(e) =>
-                      setFilters({ ...filters, area: e.target.value })
-                    }
-                    className="select"
-                  >
-                    <option value="">Select a Place</option>
-                    {Areas.map((area) => (
-                      <option key={area} value={area}>
-                        {area}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-center gap-4 font-semibold">
-                  <span className="font-bold">Price:</span>
-                  <span>&#8377;5,000</span>
+    <div className="min-h-screen w-full bg-gray-50">
+      <div className="w-full pt-4 sm:pt-6 lg:pt-8 px-3 sm:px-4 lg:px-6">
+        {/* Header Section */}
+        <div className="bg-white flex flex-col md:flex-row items-center justify-between rounded-xl shadow-lg border-b-4 border-yellow-400 p-4 sm:p-5 lg:p-6 mb-6">
+          {/* Title - Always visible */}
+          <h1 className="text-yellow-400 font-bold roboto text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 md:mb-0 text-center md:text-left">
+            Tourist Rental Listings
+          </h1>
+
+          {/* Search and Filter Section */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-center md:justify-end w-full md:w-auto">
+            <form
+              onSubmit={handleSearch}
+              className="flex gap-2 flex-1 sm:flex-initial"
+            >
+              <label className="input input-bordered rounded-full flex-1 sm:w-64 flex items-center gap-2">
+                <input
+                  type="search"
+                  name="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="grow"
+                  placeholder="Search by title"
+                />
+              </label>
+              <button type="submit" className="btn btn-warning text-white">
+                Search
+              </button>
+            </form>
+            <button
+              className="btn btn-warning text-white tooltip"
+              data-tip="Filter"
+              onClick={() => document.getElementById("my_modal_3").showModal()}
+            >
+              <i className="fa-solid fa-filter"></i>
+              <span className="hidden sm:inline ml-2">Filter</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filter Modal */}
+        <dialog id="my_modal_3" className="modal">
+          <div className="modal-box max-w-lg">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+              <h3 className="font-bold text-center text-2xl text-yellow-400 mb-4">
+                Filters
+              </h3>
+
+              {/* Place Filter */}
+              <div className="py-3 flex flex-col sm:flex-row justify-start gap-2 items-start sm:items-center font-bold">
+                <span className="min-w-fit">Place:</span>
+                <select
+                  value={filters.area}
+                  onChange={(e) =>
+                    setFilters({ ...filters, area: e.target.value })
+                  }
+                  className="select select-bordered w-full"
+                >
+                  <option value="">Select a Place</option>
+                  {Areas.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Price Range */}
+              <div className="py-3">
+                <div className="flex items-center gap-2 sm:gap-4 font-semibold mb-2">
+                  <span className="font-bold min-w-fit">Price:</span>
+                  <span className="text-sm">₹5,000</span>
                   <input
                     type="range"
                     min={5000}
@@ -153,117 +195,92 @@ const Tour = () => {
                         maxPrice: Number(e.target.value),
                       })
                     }
-                    className="range flex-1 range-warning"
+                    className="range range-warning flex-1"
                   />
-                  <div className="mt-3 text-center">
-                    <span className="inline-block px-4 py-1 bg-yellow-100 text-yellow-700 font-bold rounded-full shadow">
-                      Selected Price: ₹
-                      {filters.maxPrice.toLocaleString("en-IN")}
-                    </span>
-                  </div>
                 </div>
-                <div className="py-4 flex flex-col justify-start gap-2 items-start font-bold">
-                  <span>Important Facilities: </span>
-                  <div className="grid grid-cols-2 w-full gap-2">
-                    {[
-                      "24x7 Water Supply",
-                      "Power Backup",
-                      "Lift",
-                      "Covered Parking",
-                      "Gated Community",
-                      "Security Guard",
-                      "Swimming Pool",
-                      "Wi-Fi / Internet",
-                      "Gym",
-                      "Balcony",
-                    ].map((amenity) => (
-                      <label
-                        key={amenity}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-warning"
-                          checked={filters.amenities.includes(amenity)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFilters({
-                                ...filters,
-                                amenities: [...filters.amenities, amenity],
-                              });
-                            } else {
-                              setFilters({
-                                ...filters,
-                                amenities: filters.amenities.filter(
-                                  (a) => a !== amenity
-                                ),
-                              });
-                            }
-                          }}
-                        />
-                        <span className="font-medium">{amenity}</span>
-                      </label>
-                    ))}
-                  </div>
+                <div className="text-center">
+                  <span className="inline-block px-4 py-2 bg-yellow-100 text-yellow-700 font-bold rounded-full shadow text-sm sm:text-base">
+                    Selected: ₹{filters.maxPrice.toLocaleString("en-IN")}
+                  </span>
                 </div>
-                <div className="py-4 flex justify-start gap-2 items-center font-bold">
-                  <span>Property Type: </span>
+              </div>
 
-                  <select
-                    value={filters.propertyType}
-                    onChange={(e) =>
-                      setFilters({ ...filters, propertyType: e.target.value })
-                    }
-                    className="select"
-                  >
-                    <option value="">Select a Property Type</option>
-                    {propertyTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
+              {/* Amenities */}
+              <div className="py-3 flex flex-col gap-3">
+                <span className="font-bold">Important Facilities:</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-2">
+                  {[
+                    "24x7 Water Supply",
+                    "Power Backup",
+                    "Lift",
+                    "Covered Parking",
+                    "Gated Community",
+                    "Security Guard",
+                    "Swimming Pool",
+                    "Wi-Fi / Internet",
+                    "Gym",
+                    "Balcony",
+                  ].map((amenity) => (
+                    <label
+                      key={amenity}
+                      className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-warning checkbox-sm"
+                        checked={filters.amenities.includes(amenity)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFilters({
+                              ...filters,
+                              amenities: [...filters.amenities, amenity],
+                            });
+                          } else {
+                            setFilters({
+                              ...filters,
+                              amenities: filters.amenities.filter(
+                                (a) => a !== amenity
+                              ),
+                            });
+                          }
+                        }}
+                      />
+                      <span className="font-medium text-sm">{amenity}</span>
+                    </label>
+                  ))}
                 </div>
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleFilters}
-                    className="btn btn-warning text-white"
-                  >
-                    Apply filter
-                  </button>
-                </div>
-              </form>
-            </div>
-          </dialog>
-          <h1 className="text-yellow-400 text-left font-bold roboto text-4xl">
-            Nearby Rental Listings
-          </h1>
-          <div className="flex justify-center gap-2">
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <label className="input border-none rounded-full">
-                <input
-                  type="search"
-                  name="search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border-none"
-                  placeholder="Search by title"
-                />
-              </label>
-              <button type="submit" className="btn btn-warning">
-                Search
-              </button>
+              </div>
+
+              {/* Property Type */}
+              <div className="py-3 flex flex-col sm:flex-row justify-start gap-2 items-start sm:items-center font-bold">
+                <span className="min-w-fit">Property Type:</span>
+                <select
+                  value={filters.propertyType}
+                  onChange={(e) =>
+                    setFilters({ ...filters, propertyType: e.target.value })
+                  }
+                  className="select select-bordered w-full"
+                >
+                  <option value="">Select a Property Type</option>
+                  {propertyTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={handleFilters}
+                  className="btn btn-warning text-white w-full sm:w-auto"
+                >
+                  Apply Filters
+                </button>
+              </div>
             </form>
-            <button
-              className="btn btn-warning shadow-none tooltip"
-              data-tip="Filter"
-              onClick={() => document.getElementById("my_modal_3").showModal()}
-            >
-              <i className="fa-solid fa-filter"></i>
-            </button>
           </div>
-        </div>
-        <br />
+        </dialog>
 
         {/* No Results Animation */}
         {noResults && (
@@ -271,7 +288,7 @@ const Tour = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col items-center justify-center text-center p-8"
+            className="flex flex-col items-center justify-center text-center p-8 min-h-[50vh]"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -279,21 +296,21 @@ const Tour = () => {
               transition={{ type: "spring", stiffness: 200, damping: 10 }}
               className="p-6 rounded-full bg-yellow-100 shadow-lg"
             >
-              <SearchX className="w-14 h-14 text-yellow-500" />
+              <SearchX className="w-12 h-12 sm:w-14 sm:h-14 text-yellow-500" />
             </motion.div>
-            <h2 className="mt-6 text-2xl font-semibold text-gray-800">
+            <h2 className="mt-6 text-xl sm:text-2xl font-semibold text-gray-800">
               No Results Found
             </h2>
-            <p className="mt-2 text-gray-500 max-w-sm">
-              We couldn’t find anything based on your search. Try different
+            <p className="mt-2 text-sm sm:text-base text-gray-500 max-w-sm px-4">
+              We couldn't find anything based on your search. Try different
               keywords or explore our recommendations!
             </p>
           </motion.div>
         )}
 
-        {/* Property Listings */}
+        {/* Property Listings Grid */}
         {!noResults && (
-          <div className="p-5 mx-5 grid grid-cols-3 gap-10 w-[95vw]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 pb-8">
             {propertyData.map((property) => (
               <HouseCard
                 key={property._id}
