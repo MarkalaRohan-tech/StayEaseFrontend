@@ -22,6 +22,7 @@ import Achievements from "./components/Achievements";
 import BarChart from "./components/BarChart";
 import { useAuth } from "../../Context/UserContext";
 import { handleSuccess } from "../../utils";
+import { uploadProfileToCloudinary } from "../../Services/uploadService";
 
 const Account = () => {
   const { user, logout } = useAuth();
@@ -65,7 +66,19 @@ const Account = () => {
   });
 
   useEffect(() => {
-    const id = JSON.parse(localStorage.getItem("user"))._id;
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return;
+
+    let id;
+    try {
+      id = JSON.parse(storedUser)?._id;
+    } catch (err) {
+      console.error("Invalid stored user data:", err);
+      return;
+    }
+
+    if (!id) return;
+
     const fetchActivity = async () => {
       try {
         const res = await axios.get(`/api/user/${id}/activity`);
@@ -192,15 +205,7 @@ const Account = () => {
       let profilePicUrl = userData.profilePic;
 
       if (profileFile) {
-        const { data } = await axios.get(
-          `/api/upload/get-profile-presigned-url?fileName=${profileFile.name}&fileType=${profileFile.type}`
-        );
-
-        await axios.put(data.uploadUrl, profileFile, {
-          headers: { "Content-Type": profileFile.type },
-        });
-
-        profilePicUrl = data.fileUrl;
+        profilePicUrl = await uploadProfileToCloudinary(profileFile);
       }
 
       const storedUser = localStorage.getItem("user");
@@ -534,24 +539,24 @@ const Account = () => {
             title="Total Bookings"
             value={userData.bookings.length}
             subTitle="Stays booked"
-            iconColor="text-green-500"
+            iconColor="text-yellow-400"
             icon={
               <i className="fa-solid fa-house text-lg sm:text-xl md:text-2xl"></i>
             }
-            border="border-green-400"
-            shadowColor="shadow-green-200"
+            border="border-white-400"
+            shadowColor="shadow-yellow-200"
             shadow="shadow-xl"
           />
           <StatsCard
             title="Properties Hosted"
             value={userData.hosting.length}
             subTitle="Active Listings"
-            iconColor="text-orange-500"
+            iconColor="text-yellow-400"
             icon={
               <i className="fa-solid fa-hotel text-lg sm:text-xl md:text-2xl"></i>
             }
-            border="border-orange-400"
-            shadowColor="shadow-orange-200"
+            border="border-white-400"
+            shadowColor="shadow-yellow-200"
             shadow="shadow-xl"
           />
           <StatsCard
@@ -560,12 +565,12 @@ const Account = () => {
             subTitle={`Avg: ${
               typeof avgRating === "number" ? avgRating.toFixed(1) : "0.0"
             }`}
-            iconColor="text-blue-500"
+            iconColor="text-yellow-400"
             icon={
               <i className="fa-solid fa-star text-lg sm:text-xl md:text-2xl"></i>
             }
-            border="border-blue-400"
-            shadowColor="shadow-blue-200"
+            border="border-white-400"
+            shadowColor="shadow-yellow-200"
             shadow="shadow-xl"
           />
         </div>

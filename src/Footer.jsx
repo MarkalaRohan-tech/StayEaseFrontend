@@ -1,9 +1,8 @@
 import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin } from "react-icons/fa";
 
-
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 text-gray-700 pt-10 pb-6 px-6 md:px-20">
+    <footer className="bg-gray-200 text-gray-700 pt-10 pb-6 px-6 md:px-20">
       <div className="max-w-6xl mx-auto text-center">
         {/* About StayEase */}
         <h2 className="text-2xl font-bold text-yellow-400 mb-2">StayEase</h2>

@@ -13,8 +13,8 @@ import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import PlaceDetail from "./components/NearBy/PlaceDetail.jsx";
 import TourPlaceDetail from "./components/Tour/PlaceDetail.jsx";
 import LoginRedirect from "./components/LoginRedirect.jsx";
-import ProtectedRoute from "./ProtectedRoute.jsx"
-import DataDeletion from "./DataDeletion.jsx"
+import ProtectedRoute from "./ProtectedRoute.jsx";
+import DataDeletion from "./DataDeletion.jsx";
 import ErrorPage from "./ErrorPage.jsx";
 import { ToastContainer } from "react-toastify";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -34,8 +34,22 @@ function App() {
       element: <Layout />,
       children: [
         { path: "/", element: <HomePage /> },
-        { path: "/nearby", element: <Nearby /> },
-        { path: "/tour", element: <Tour /> },
+        {
+          path: "/nearby",
+          element: (
+            <ProtectedRoute>
+              <Nearby />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/tour",
+          element: (
+            <ProtectedRoute>
+              <Tour />
+            </ProtectedRoute>
+          ),
+        },
         {
           path: "/listProperty",
           element: (
@@ -48,7 +62,11 @@ function App() {
         },
         {
           path: "/account",
-          element: <Account />,
+          element: (
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "/login",

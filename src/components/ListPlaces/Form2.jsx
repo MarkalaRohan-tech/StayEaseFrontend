@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { uploadToS3 } from "../../Services/uploadService";
+import { uploadToCloudinary } from "../../Services/uploadService";
 
 const Form2 = ({ onSubmit, onPrev, defaultValues }) => {
   const [loading, setLoading] = useState(false);
   const [imagesURL, setImagesURL] = useState(
-    (defaultValues.imageUrls || []).map((url) => ({ file: null, preview: url }))
+    (defaultValues.imageUrls || []).map((url) => ({
+      file: null,
+      preview: url,
+    })),
   );
 
   const handleFileChange = (e) => {
@@ -48,7 +51,9 @@ const Form2 = ({ onSubmit, onPrev, defaultValues }) => {
       setLoading(true);
 
       const urls = await Promise.all(
-        imagesURL.map((img) => (img.file ? uploadToS3(img.file) : img.preview))
+        imagesURL.map((img) =>
+          img.file ? uploadToCloudinary(img.file) : img.preview,
+        ),
       );
       setImagesURL(urls.map((url) => ({ file: null, preview: url })));
 

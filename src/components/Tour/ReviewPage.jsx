@@ -222,10 +222,10 @@ const ReviewPage = ({ id, host }) => {
           ) : (
             <div className="text-center border-2 border-yellow-300 rounded-xl p-8 bg-yellow-50 shadow-inner">
               <p className="font-semibold text-gray-700 text-base sm:text-lg">
-                No comments yet 😔
+                No comments yet
               </p>
               <p className="text-yellow-600 mt-2">
-                Be the first to share your experience 🌟
+                Be the first to share your experience
               </p>
             </div>
           )}

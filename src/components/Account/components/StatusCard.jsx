@@ -11,7 +11,7 @@ const StatsCard = ({
   shadowColor,
 }) => (
   <div
-    className={`p-3 sm:p-4 lg:p-6 rounded-lg sm:rounded-xl shadow border-l-4 ${border} ${shadow} ${shadowColor} bg-white hover:shadow-lg transition-shadow duration-200`}
+    className={`p-3 sm:p-4 lg:p-6 rounded-lg sm:rounded-xl shadow ${border} ${shadow} ${shadowColor} bg-white hover:shadow-lg transition-shadow duration-200`}
   >
     <div
       className={`font-bold text-sm sm:text-base lg:text-lg mb-2 sm:mb-3 ${iconColor} truncate`}

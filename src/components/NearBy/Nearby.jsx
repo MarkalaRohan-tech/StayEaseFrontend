@@ -10,6 +10,7 @@ const Nearby = () => {
   const { user } = useAuth();
   const [propertyData, setPropertyData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [noResults, setNoResults] = useState(false);
   const [filters, setFilters] = useState({
     area: "",
@@ -32,6 +33,26 @@ const Nearby = () => {
     }
   };
 
+  const fetchSuggestions = async (value) => {
+    const clean = String(value || "").trim();
+
+    if (clean.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await axios.get("/api/property/searchLocal", {
+        params: { term: clean },
+      });
+      const matches = response.data?.data || [];
+      setSuggestions(matches.slice(0, 5));
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+
   const handleSearch = async (e) => {
     e.preventDefault();
 
@@ -42,7 +63,7 @@ const Nearby = () => {
 
     try {
       const response = await axios.get(
-        `/api/property/searchLocal?term=${searchTerm}`
+        `/api/property/searchLocal?term=${searchTerm}`,
       );
       const searchData = response.data.data;
 
@@ -128,7 +149,11 @@ const Nearby = () => {
                   type="search"
                   name="search"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    const nextValue = e.target.value;
+                    setSearchTerm(nextValue);
+                    fetchSuggestions(nextValue);
+                  }}
                   className="grow"
                   placeholder="Search by title"
                 />
@@ -137,6 +162,25 @@ const Nearby = () => {
                 Search
               </button>
             </form>
+            {suggestions.length > 0 && (
+              <div className="absolute z-20 mt-12 max-w-sm rounded-xl border border-yellow-200 bg-white shadow-lg p-2">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion._id}
+                    type="button"
+                    className="block w-full text-left px-3 py-2 text-sm hover:bg-yellow-50 rounded"
+                    onClick={() => {
+                      setSearchTerm(suggestion.title);
+                      setSuggestions([]);
+                      setPropertyData([suggestion]);
+                      setNoResults(false);
+                    }}
+                  >
+                    {suggestion.title}
+                  </button>
+                ))}
+              </div>
+            )}
             <button
               className="btn btn-warning text-white tooltip"
               data-tip="Filter"
@@ -239,7 +283,7 @@ const Nearby = () => {
                             setFilters({
                               ...filters,
                               amenities: filters.amenities.filter(
-                                (a) => a !== amenity
+                                (a) => a !== amenity,
                               ),
                             });
                           }

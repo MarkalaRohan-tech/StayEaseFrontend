@@ -46,15 +46,20 @@ const PlaceDetail = () => {
     fetchPlace();
   }, [id]);
 
-  const carouselRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+  const carouselRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const images = Array.isArray(place?.imageUrls)
+    ? place.imageUrls.filter(Boolean)
+    : [];
 
   const handleScroll = (index) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
     setActiveIndex(index);
-    carouselRefs[index].current?.scrollIntoView({
+    carousel.scrollTo({
+      left: index * carousel.clientWidth,
       behavior: "smooth",
-      block: "nearest",
-      inline: "start",
     });
   };
 
@@ -76,7 +81,7 @@ const PlaceDetail = () => {
 
     // calculate number of nights
     const nights = Math.ceil(
-      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24),
     );
 
     return place.price * nights;
@@ -158,34 +163,46 @@ const PlaceDetail = () => {
         <div className="space-y-6 sm:space-y-8 lg:space-y-10">
           {/* Image Carousel */}
           <div className="w-full max-w-5xl mx-auto">
-            <div className="carousel w-full h-48 xs:h-64 sm:h-80 md:h-96 lg:h-[400px] border-4 border-yellow-400 rounded-xl overflow-hidden shadow-xl">
-              {place?.imageUrls?.map((src, index) => (
-                <div
-                  key={index}
-                  ref={carouselRefs[index]}
-                  className="carousel-item w-full"
-                >
-                  <img
-                    src={src}
-                    className="w-full h-full object-cover"
-                    alt={`Slide ${index + 1}`}
-                  />
+            <div
+              ref={carouselRef}
+              className="carousel w-full h-48 xs:h-64 sm:h-80 md:h-96 lg:h-[400px] border-4 border-yellow-400 rounded-xl overflow-x-auto overflow-y-hidden shadow-xl scroll-smooth"
+            >
+              {images.length > 0 ? (
+                images.map((src, index) => (
+                  <div
+                    key={index}
+                    className="carousel-item w-full min-w-full shrink-0"
+                  >
+                    <img
+                      src={src}
+                      className="w-full h-full object-cover"
+                      alt={`Slide ${index + 1}`}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="flex w-full min-w-full items-center justify-center text-gray-500">
+                  No house photos available
                 </div>
-              ))}
+              )}
             </div>
-            <div className="flex justify-center mt-4 gap-2 sm:gap-3">
-              {[0, 1, 2, 3].map((i) => (
-                <button
-                  key={i}
-                  onClick={() => handleScroll(i)}
-                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full cursor-pointer transition-all duration-300 ${
-                    i === activeIndex
-                      ? "bg-yellow-400 scale-110 shadow"
-                      : "bg-gray-200"
-                  }`}
-                />
-              ))}
-            </div>
+            {images.length > 1 && (
+              <div className="flex justify-center mt-4 gap-2 sm:gap-3">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-label={`Show photo ${i + 1}`}
+                    onClick={() => handleScroll(i)}
+                    className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full cursor-pointer transition-all duration-300 ${
+                      i === activeIndex
+                        ? "bg-yellow-400 scale-110 shadow"
+                        : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Host Contact & Price Section */}
